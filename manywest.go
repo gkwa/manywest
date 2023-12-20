@@ -87,7 +87,7 @@ func run(options Options) error {
 	filename := "make_txtar.sh"
 	_, err := os.Stat(filename)
 	if err == nil {
-		slog.Info("file exists, quiting early to prevent overwriting", "file", filename)
+		slog.Warn("file exists, quiting early to prevent overwriting", "file", filename)
 		return nil
 	}
 
@@ -146,7 +146,7 @@ func run(options Options) error {
 		return err
 	}
 
-	slog.Debug("Script created successfully", "script", scriptFileName)
+	slog.Info("Script created successfully", "script", scriptFileName)
 	return nil
 }
 
