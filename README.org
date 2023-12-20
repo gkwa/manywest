@@ -1,0 +1,14 @@
+* manywest
+
+** summary
+
+This is a description of project manywest.
+
+** usage
+
+Example:
+#+begin_example
+make test
+./manywest --help
+./manywest --log-level=debug
+#+end_example
