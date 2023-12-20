@@ -56,11 +56,21 @@ if [ -z "${tmp+x}" ] || [ -z "$tmp" ]; then
     exit 1
 fi
 
+if ! command -v txtar-c >/dev/null; then
+    echo go install github.com/rogpeppe/go-internal/cmd/txtar-c@latest
+	exit 1
+fi
+
+if ! command -v rg >/dev/null; then
+    echo brew insall ripgrep
+	exit 1
+fi
+
 {
     rg --files . \
-		| grep -vE $tmp/filelist.txt \
-		| grep -vE make_txtar.sh \
-        {{range .Files}}| grep -vE {{.}} \
+		| grep -vE $tmp'/filelist.txt$' \
+		| grep -vE 'make_txtar.sh$' \
+        {{range .Files}}| grep -vE '{{.}}$' \
         {{end}}
 } | tee $tmp/filelist.txt
 
