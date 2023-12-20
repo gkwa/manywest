@@ -52,7 +52,7 @@ const templateScript = `#!/usr/bin/env bash
 tmp=$(mktemp -d {{.Cwd}}.XXXXX)
 
 if [ -z "${tmp+x}" ] || [ -z "$tmp" ]; then
-    slog.Error("Error: $tmp is not set or is an empty string.")
+    echo "Error: $tmp is not set or is an empty string."
     exit 1
 fi
 
