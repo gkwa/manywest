@@ -68,8 +68,8 @@ fi
 
 {
     rg --files . \
-		| grep -vE $tmp'/filelist.txt$' \
-		| grep -vE 'make_txtar.sh$' \
+	    | grep -vE $tmp'/filelist.txt$' \
+        | grep -vE 'make_txtar.sh$' \
         {{range .Files}}| grep -vE '{{.}}$' \
         {{end}}
 } | tee $tmp/filelist.txt
