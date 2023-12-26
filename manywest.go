@@ -2,7 +2,6 @@ package manywest
 
 import (
 	"flag"
-	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -114,15 +113,7 @@ func run(options Options) error {
 		return err
 	}
 
-	// convert 'manywest' to regex 'manywest$'
 	cwdName := filepath.Base(cwd)
-	matchString := cwdName
-	replaceString := fmt.Sprintf("%s$", cwdName)
-	for i, s := range fileList {
-		if s == matchString {
-			fileList[i] = replaceString
-		}
-	}
 
 	data := struct {
 		Files []string
