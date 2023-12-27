@@ -68,11 +68,8 @@ if ! command -v txtar-c >/dev/null; then
 	exit 1
 fi
 
-{
-	echo 
-	{{range .Files}}# ls '{{.}}'
-	{{end}}
-} | tee $tmp/filelist.txt
+{{range .Files}}# ls '{{.}}' >>$tmp/filelist.txt
+{{end}}
 
 tar -cf $tmp/{{.Cwd}}.tar -T $tmp/filelist.txt
 mkdir -p $tmp/{{.Cwd}}
