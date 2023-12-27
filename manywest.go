@@ -2,12 +2,20 @@ package manywest
 
 import (
 	"flag"
+	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
+
+	"github.com/h2non/filetype"
 )
+
+var excludeDirs = map[string]bool{
+	".git": true,
+	// "__pycache__": true,
+}
 
 type Options struct {
 	LogFormat string
@@ -60,17 +68,10 @@ if ! command -v txtar-c >/dev/null; then
 	exit 1
 fi
 
-if ! command -v rg >/dev/null; then
-    echo brew insall ripgrep
-	exit 1
-fi
-
 {
-    rg --files . \
-        | grep -vE $tmp'/filelist.txt$' \
-        | grep -vE 'make_txtar.sh$' \
-        {{range .Files}}| grep -vE '{{.}}$' \
-        {{end}}
+	echo 
+	{{range .Files}}# ls '{{.}}'
+	{{end}}
 } | tee $tmp/filelist.txt
 
 tar -cf $tmp/{{.Cwd}}.tar -T $tmp/filelist.txt
@@ -82,11 +83,31 @@ txtar-c $tmp/{{.Cwd}} | pbcopy
 rm -rf $tmp
 `
 
+func isFileText(filename string) (bool, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return false, err
+	}
+	defer file.Close()
+
+	buffer := make([]byte, 512)
+	_, err = file.Read(buffer)
+	if err != nil && err != io.EOF {
+		return false, err
+	}
+
+	kind, _ := filetype.Match(buffer)
+	return kind == filetype.Unknown || kind.MIME.Type == "text", nil
+}
+
 func run(options Options) error {
-	filename := "make_txtar.sh"
-	_, err := os.Stat(filename)
+	filename, err := filepath.Abs("make_txtar.sh")
+	if err != nil {
+		panic(err)
+	}
+	_, err = os.Stat(filename)
 	if err == nil {
-		slog.Warn("file exists, quiting early to prevent overwriting", "file", filename)
+		slog.Warn("file exists, quitting early to prevent overwriting", "file", filename)
 		return nil
 	}
 
@@ -96,7 +117,9 @@ func run(options Options) error {
 		return err
 	}
 
-	if len(fileList) > 20 {
+	const MAX_FILE_COUNT = 100
+
+	if len(fileList) > MAX_FILE_COUNT {
 		slog.Error("Error: Number of files is greater than 20.", "fileCount", len(fileList))
 		return err
 	}
@@ -148,13 +171,28 @@ func recurseDirectory(root string) ([]string, error) {
 		if err != nil {
 			return err
 		}
-		if info.IsDir() && info.Name() == ".git" {
+		if info.IsDir() && excludeDirs[info.Name()] {
 			return filepath.SkipDir
 		}
 		if info.IsDir() {
 			return nil
 		}
 		if isExcludedFile(info.Name()) {
+			return nil
+		}
+
+		// Check if the file is text and skip if it is not
+		isText, err := isFileText(path)
+		if err != nil {
+			slog.Error("Error checking if file is text", "file", path, "error", err)
+			return err
+		}
+		if isText {
+			slog.Debug("file is text file", "file", path)
+		}
+
+		if !isText {
+			slog.Info("Skipping non-text file", "file", path)
 			return nil
 		}
 
