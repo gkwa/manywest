@@ -13,8 +13,8 @@ import (
 )
 
 var excludeDirs = map[string]bool{
-	".git": true,
-	// "__pycache__": true,
+	".git":        true,
+	"__pycache__": true,
 }
 
 type Options struct {
@@ -59,7 +59,7 @@ const templateScript = `#!/usr/bin/env bash
 tmp=$(mktemp -d {{.Cwd}}.XXXXX)
 
 if [ -z "${tmp+x}" ] || [ -z "$tmp" ]; then
-    echo "Error: $tmp is not set or is an empty string."
+    echo "error: $tmp is not set or is an empty string."
     exit 1
 fi
 
@@ -113,26 +113,26 @@ func run(options Options) error {
 
 	fileList, err := recurseDirectory(".")
 	if err != nil {
-		slog.Error("Error:", "error", err)
+		slog.Error("error:", "error", err)
 		return err
 	}
 
 	const MAX_FILE_COUNT = 100
 
 	if len(fileList) > MAX_FILE_COUNT {
-		slog.Error("Error: Number of files is greater than 20.", "fileCount", len(fileList))
+		slog.Error("error: Number of files is greater than 20.", "fileCount", len(fileList))
 		return err
 	}
 
 	tmpl, err := template.New("script").Parse(templateScript)
 	if err != nil {
-		slog.Error("Error:", "error", err)
+		slog.Error("error:", "error", err)
 		return err
 	}
 
 	cwd, err := os.Getwd()
 	if err != nil {
-		slog.Error("Error:", "error", err)
+		slog.Error("error:", "error", err)
 		return err
 	}
 
@@ -149,14 +149,14 @@ func run(options Options) error {
 	var scriptBuilder strings.Builder
 	err = tmpl.Execute(&scriptBuilder, data)
 	if err != nil {
-		slog.Error("Error:", "error", err)
+		slog.Error("error:", "error", err)
 		return err
 	}
 
 	scriptFileName := "make_txtar.sh"
 	err = os.WriteFile(scriptFileName, []byte(scriptBuilder.String()), 0o755)
 	if err != nil {
-		slog.Error("Error:", "error", err)
+		slog.Error("error:", "error", err)
 		return err
 	}
 
