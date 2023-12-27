@@ -54,7 +54,7 @@ func parseArgs() Options {
 
 const templateScript = `#!/usr/bin/env bash
 
-# set -e
+set -e
 
 tmp=$(mktemp -d {{.Cwd}}.XXXXX)
 
