@@ -68,8 +68,13 @@ if ! command -v txtar-c >/dev/null; then
 	exit 1
 fi
 
-{{range .Files}}# ls '{{.}}' >>$tmp/filelist.txt
-{{end}}
+declare -a files=(
+	{{range .Files}}# {{.}}
+	{{end}}
+)
+for file in "${files[@]}"; do
+    echo $file
+done | tee $tmp/filelist.txt
 
 tar -cf $tmp/{{.Cwd}}.tar -T $tmp/filelist.txt
 mkdir -p $tmp/{{.Cwd}}
@@ -98,11 +103,8 @@ func isFileText(filename string) (bool, error) {
 }
 
 func run(options Options) error {
-	filename, err := filepath.Abs("make_txtar.sh")
-	if err != nil {
-		panic(err)
-	}
-	_, err = os.Stat(filename)
+	filename, _ := filepath.Abs("make_txtar.sh")
+	_, err := os.Stat(filename)
 	if err == nil {
 		slog.Warn("file exists, quitting early to prevent overwriting", "file", filename)
 		return nil
@@ -150,14 +152,14 @@ func run(options Options) error {
 		return err
 	}
 
-	scriptFileName := "make_txtar.sh"
+	scriptFileName, _ := filepath.Abs("make_txtar.sh")
 	err = os.WriteFile(scriptFileName, []byte(scriptBuilder.String()), 0o755)
 	if err != nil {
 		slog.Error("error:", "error", err)
 		return err
 	}
 
-	slog.Info("Script created successfully", "script", scriptFileName)
+	slog.Info("script created successfully", "script", scriptFileName)
 	return nil
 }
 
@@ -174,22 +176,7 @@ func recurseDirectory(root string) ([]string, error) {
 		if info.IsDir() {
 			return nil
 		}
-		if isExcludedFile(info.Name()) {
-			return nil
-		}
-
-		// Check if the file is text and skip if it is not
-		isText, err := isFileText(path)
-		if err != nil {
-			slog.Error("Error checking if file is text", "file", path, "error", err)
-			return err
-		}
-		if isText {
-			slog.Debug("file is text file", "file", path)
-		}
-
-		if !isText {
-			slog.Info("Skipping non-text file", "file", path)
+		if isExcludedFile(path) {
 			return nil
 		}
 
@@ -201,9 +188,17 @@ func recurseDirectory(root string) ([]string, error) {
 }
 
 func isExcludedFile(fileName string) bool {
-	excludedFiles := map[string]bool{
-		// Add more excluded files as needed
+	isText, err := isFileText(fileName)
+	if err != nil {
+		slog.Error("error checking if file is text", "file", fileName, "error", err)
+		return true
 	}
 
-	return excludedFiles[fileName]
+	if isText {
+		slog.Debug("filetype", "type", "text", "file", fileName)
+		return false
+	}
+
+	slog.Debug("filetype", "type", "binary", "file", fileName)
+	return true
 }
