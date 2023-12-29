@@ -17,6 +17,7 @@ import (
 var excludeDirs = map[string]bool{
 	".git":        true,
 	"__pycache__": true,
+	".ruff_cache": true,
 }
 
 type FileEntry struct {
@@ -86,6 +87,11 @@ declare -a files=(
 for file in "${files[@]}"; do
     echo $file
 done | tee $tmp/filelist.txt
+
+if [[ ! -s $tmp/filelist.txt ]]; then
+	rm -rf $tmp
+	exit 0
+fi
 
 tar -cf $tmp/{{.Cwd}}.tar -T $tmp/filelist.txt
 mkdir -p $tmp/{{.Cwd}}
