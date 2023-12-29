@@ -80,6 +80,11 @@ if ! command -v txtar-c >/dev/null; then
 	exit 1
 fi
 
+if ! command -v rg >/dev/null; then
+    echo https://github.com/burntsushi/ripgrep#installation
+	exit 1
+fi
+
 declare -a files=(
 	{{range .Files}}# {{.Path}} # loc: {{.Count}}
 	{{end}}
@@ -97,6 +102,7 @@ tar -cf $tmp/{{.Cwd}}.tar -T $tmp/filelist.txt
 mkdir -p $tmp/{{.Cwd}}
 tar xf $tmp/{{.Cwd}}.tar -C $tmp/{{.Cwd}}
 rg --files $tmp/{{.Cwd}}
+
 txtar-c $tmp/{{.Cwd}} | pbcopy
 
 rm -rf $tmp
