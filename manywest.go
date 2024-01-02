@@ -66,7 +66,6 @@ func parseArgs() Options {
 }
 
 const templateScript = `#!/usr/bin/env bash
-
 set -e
 
 tmp=$(mktemp -d {{.Cwd}}.XXXXX)
@@ -97,8 +96,7 @@ rg --files $tmp/{{.Cwd}}
 mkdir -p $tmp/gpt_instructions_XXYYBB
 cat >$tmp/gpt_instructions_XXYYBB/1.txt <<EOF
 
-###
-###
+#
 
 Remember to show all your code in a single code block
 using txtar archive format.
@@ -106,8 +104,6 @@ using txtar archive format.
 If it turns out that you have not modified the source file
 from the state at which I sent it to you, then it is not necessary
 for you to include it in the code block.
-
-
 
 In summary, txtar archive format is like this:
 -- cmd/main.go --
@@ -133,19 +129,13 @@ Please do not write this either:
 
 Instead, just leave src/scanRecords.ts file out of
 the archive all together.
-
 EOF
 
-
 {
-	cat $tmp/gpt_instructions_XXYYBB/1.txt
-
-	echo txtar archive is below
-
-
-	txtar-c $tmp/{{.Cwd}}
-
-	} | pbcopy
+    cat $tmp/gpt_instructions_XXYYBB/1.txt
+    echo txtar archive is below
+    txtar-c $tmp/{{.Cwd}}
+} | pbcopy
 
 rm -rf $tmp
 `
