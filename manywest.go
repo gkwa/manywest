@@ -127,8 +127,10 @@ Please do not write this either:
 -- src/scanRecords.ts --
 // ... (rest of the code remains unchanged)
 
-Instead, just leave src/scanRecords.ts file out of
-the archive all together.
+Instead, just leave src/scanRecords.ts file out of the archive all
+together, or if you've listed partial file, then you must include the
+whole contents of the file but do not abbreviate or say "the reset of
+the file remains unchanged".
 EOF
 
 {
