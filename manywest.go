@@ -15,9 +15,10 @@ import (
 )
 
 var excludeDirs = map[string]bool{
-	".git":        true,
-	"__pycache__": true,
-	".ruff_cache": true,
+	".git":                    true,
+	"__pycache__":             true,
+	"node_modules":            true,
+	"gpt_instructions_XXYYBB": true,
 }
 
 type FileEntry struct {
@@ -80,11 +81,6 @@ if ! command -v txtar-c >/dev/null; then
 	exit 1
 fi
 
-if ! command -v rg >/dev/null; then
-    echo https://github.com/burntsushi/ripgrep#installation
-	exit 1
-fi
-
 declare -a files=(
 	{{range .Files}}# {{.Path}} # loc: {{.Count}}
 	{{end}}
@@ -93,17 +89,63 @@ for file in "${files[@]}"; do
     echo $file
 done | tee $tmp/filelist.txt
 
-if [[ ! -s $tmp/filelist.txt ]]; then
-	rm -rf $tmp
-	exit 0
-fi
-
 tar -cf $tmp/{{.Cwd}}.tar -T $tmp/filelist.txt
 mkdir -p $tmp/{{.Cwd}}
 tar xf $tmp/{{.Cwd}}.tar -C $tmp/{{.Cwd}}
 rg --files $tmp/{{.Cwd}}
 
-txtar-c $tmp/{{.Cwd}} | pbcopy
+mkdir -p $tmp/gpt_instructions_XXYYBB
+cat >$tmp/gpt_instructions_XXYYBB/1.txt <<EOF
+
+###
+###
+
+Remember to show all your code in a single code block
+using txtar archive format.
+
+If it turns out that you have not modified the source file
+from the state at which I sent it to you, then it is not necessary
+for you to include it in the code block.
+
+
+
+In summary, txtar archive format is like this:
+-- cmd/main.go --
+{ contents of main.go }
+-- mypackage.go --
+{ contents of mypackage.go }
+
+If there are no changes necessary to a file, then don't add it
+to txtar archive.
+
+So, for example do NOT write this if src/scanRecords.ts
+hasn't changed:
+-- src/scanRecords.ts --
+// ... (unchanged)
+
+Please do not write this either:
+-- src/scanRecords.ts --
+// Contents of createTable.ts
+
+Please do not write this either:
+-- src/scanRecords.ts --
+// ... (rest of the code remains unchanged)
+
+Instead, just leave src/scanRecords.ts file out of
+the archive all together.
+
+EOF
+
+
+{
+	cat $tmp/gpt_instructions_XXYYBB/1.txt
+
+	echo txtar archive is below
+
+
+	txtar-c $tmp/{{.Cwd}}
+
+	} | pbcopy
 
 rm -rf $tmp
 `
