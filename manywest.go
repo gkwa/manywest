@@ -130,7 +130,7 @@ Please do not write this either:
 Instead, just leave src/scanRecords.ts file out of the archive all
 together, or if you've listed partial file, then you must include the
 whole contents of the file but do not abbreviate or say "the reset of
-the file remains unchanged".
+the file remains unchanged" or anything to that effect.
 EOF
 
 {
