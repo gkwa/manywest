@@ -19,6 +19,7 @@ var excludeDirs = map[string]bool{
 	"__pycache__":             true,
 	"node_modules":            true,
 	"gpt_instructions_XXYYBB": true,
+	".ruff_cache":             true,
 }
 
 type FileEntry struct {
