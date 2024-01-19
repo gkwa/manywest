@@ -95,43 +95,33 @@ tar xf $tmp/{{.Cwd}}.tar -C $tmp/{{.Cwd}}
 rg --files $tmp/{{.Cwd}}
 
 mkdir -p $tmp/gpt_instructions_XXYYBB
+
 cat >$tmp/gpt_instructions_XXYYBB/1.txt <<EOF
+Subject: Code Submission Guidelines in Txtar Archive Format
 
-#
+As we collaborate on code submissions, I would like to emphasize some guidelines for presenting your code using the txtar archive format.
 
-Remember to show all your code in a single code block
-using txtar archive format.
+Unified Code Block:
+Ensure that all your code is displayed within a single code block using the txtar archive format. This helps maintain a structured and organized presentation.
 
-If it turns out that you have not modified the source file
-from the state at which I sent it to you, then it is not necessary
-for you to include it in the code block.
+Modification Verification:
+If, upon review, you find that you haven't made any modifications to a specific source file since its initial state, kindly refrain from including it in the code block.
 
-In summary, txtar archive format is like this:
+Txtar Archive Format Summary:
+The txtar archive format should follow this structure:
+
 -- cmd/main.go --
-{ contents of main.go }
+{ contents of main.go go here }
 -- mypackage.go --
-{ contents of mypackage.go }
+{ contents of mypackage.go go here }
 
-If there are no changes necessary to a file, then don't add it
-to txtar archive.
+Omitting Unchanged Files:
+If a file requires no changes, please exclude it from the txtar archive. Do not include statements like // ... (unchanged) or similar indications.
 
-So, for example do NOT write this if src/scanRecords.ts
-hasn't changed:
--- src/scanRecords.ts --
-// ... (unchanged)
+Avoid Partial Listings:
+Refrain from providing partial listings for unchanged files. Instead, either omit the file entirely or include its complete content without any abbreviations or explanations about unchanged portions.
 
-Please do not write this either:
--- src/scanRecords.ts --
-// Contents of createTable.ts
-
-Please do not write this either:
--- src/scanRecords.ts --
-// ... (rest of the code remains unchanged)
-
-Instead, just leave src/scanRecords.ts file out of the archive all
-together, or if you've listed partial file, then you must include the
-whole contents of the file but do not abbreviate or say "the reset of
-the file remains unchanged" or anything to that effect.
+Your adherence to these guidelines will greatly facilitate our collaboration and ensure a streamlined code submission process. Thank you for your attention to detail and cooperation.
 EOF
 
 {
