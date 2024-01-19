@@ -14,14 +14,6 @@ import (
 	"github.com/jessevdk/go-flags"
 )
 
-var excludeDirs = map[string]bool{
-	".git":                    true,
-	"__pycache__":             true,
-	"node_modules":            true,
-	"gpt_instructions_XXYYBB": true,
-	".ruff_cache":             true,
-}
-
 type FileEntry struct {
 	Path  string
 	Count int
@@ -29,9 +21,10 @@ type FileEntry struct {
 }
 
 type Options struct {
-	LogFormat      string `long:"log-format" default:"text" description:"Log format (text or json)"`
-	LogLevel       string `long:"log-level" default:"info" description:"Log level (debug, info, warn, error)"`
-	ForceOverwrite bool   `long:"force" short:"f" description:"Force overwrite pre-existing make_txtar.sh"`
+	LogFormat      string   `long:"log-format" default:"text" description:"Log format (text or json)"`
+	LogLevel       string   `long:"log-level" default:"info" description:"Log level (debug, info, warn, error)"`
+	ForceOverwrite bool     `long:"force" short:"f" description:"Force overwrite pre-existing make_txtar.sh"`
+	ExcludeDirs    []string `long:"ignore-dirs" short:"i" description:"Ignore directories"`
 }
 
 func Execute() int {
@@ -151,6 +144,18 @@ rm -rf $tmp
 `
 
 func run(options Options) error {
+	excludeDirs := map[string]bool{
+		".git":                    true,
+		"__pycache__":             true,
+		"node_modules":            true,
+		"gpt_instructions_XXYYBB": true,
+		".ruff_cache":             true,
+	}
+	// append user-specified exclude dirs
+	for _, dir := range options.ExcludeDirs {
+		excludeDirs[dir] = true
+	}
+
 	filename, _ := filepath.Abs("make_txtar.sh")
 	_, err := os.Stat(filename)
 	if err == nil && !options.ForceOverwrite {
@@ -158,7 +163,7 @@ func run(options Options) error {
 		return nil
 	}
 
-	fileList, err := recurseDirectory(".")
+	fileList, err := recurseDirectory(".", excludeDirs)
 	if err != nil {
 		slog.Error("error:", "error", err)
 		return err
@@ -167,7 +172,7 @@ func run(options Options) error {
 	const MAX_FILE_COUNT = 100
 
 	if len(fileList) > MAX_FILE_COUNT {
-		slog.Error("error: Number of files is greater than 20.", "fileCount", len(fileList))
+		slog.Error("error: Number of files is greater than limit", "limit", MAX_FILE_COUNT, "fileCount", len(fileList))
 		return err
 	}
 
@@ -230,7 +235,7 @@ func run(options Options) error {
 	return nil
 }
 
-func recurseDirectory(root string) ([]string, error) {
+func recurseDirectory(root string, excludeDirs map[string]bool) ([]string, error) {
 	var fileList []string
 
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
