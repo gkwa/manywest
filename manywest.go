@@ -99,29 +99,46 @@ mkdir -p $tmp/gpt_instructions_XXYYBB
 cat >$tmp/gpt_instructions_XXYYBB/1.txt <<EOF
 Subject: Code Submission Guidelines in Txtar Archive Format
 
-As we collaborate on code submissions, I would like to emphasize some guidelines for presenting your code using the txtar archive format.
+As we collaborate on code submissions, I would like to emphasize some
+guidelines for presenting your code using the txtar archive format.
 
-Unified Code Block:
-Ensure that all your code is displayed within a single code block using the txtar archive format. This helps maintain a structured and organized presentation.
+Unified Code Block: Ensure that all your code is displayed within a
+single code block using the txtar archive format.
 
-Modification Verification:
-If, upon review, you find that you haven't made any modifications to a specific source file since its initial state, kindly refrain from including it in the code block.
+This helps maintain a structured and organized presentation.
 
-Txtar Archive Format Summary:
-The txtar archive format should follow this structure:
+Modification Verification: If, upon review, you find that you haven't
+made any modifications to a specific source file since its initial
+state, kindly refrain from including it in the code block.
 
+Txtar Archive Format Summary: The txtar archive format should follow
+this structure:
+
+#+begin_example
 -- cmd/main.go --
-{ contents of main.go go here }
+{ contents of main.go }
 -- mypackage.go --
-{ contents of mypackage.go go here }
+{ contents of mypackage.go }
+#+end_example
 
 Omitting Unchanged Files:
-If a file requires no changes, please exclude it from the txtar archive. Do not include statements like // ... (unchanged) or similar indications.
+If a file requires no changes, please exclude it from the txtar archive.
+
+Do not include statements like this example:
+#+begin_example
+// ... (unchanged) or similar indications.
+#+end_example
 
 Avoid Partial Listings:
-Refrain from providing partial listings for unchanged files. Instead, either omit the file entirely or include its complete content without any abbreviations or explanations about unchanged portions.
+Refrain from providing partial listings for unchanged files.
 
-Your adherence to these guidelines will greatly facilitate our collaboration and ensure a streamlined code submission process. Thank you for your attention to detail and cooperation.
+Instead, either omit the file entirely or include its complete content
+without any abbreviations or explanations about unchanged portions.
+
+Your adherence to these guidelines will greatly facilitate our
+collaboration and ensure a streamlined code submission process.
+
+Thank you for your attention to detail and cooperation.
 EOF
 
 {
