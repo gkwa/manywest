@@ -25,6 +25,7 @@ type Options struct {
 	LogLevel       string   `long:"log-level" default:"info" description:"Log level (debug, info, warn, error)"`
 	ForceOverwrite bool     `long:"force" short:"f" description:"Force overwrite pre-existing make_txtar.sh"`
 	ExcludeDirs    []string `long:"ignore-dirs" short:"i" description:"Ignore directories"`
+	MaxFileCount   int      `long:"maxfiles" default:"100" description:"Maximum number of files to include in txtar archive"`
 }
 
 func Execute() int {
@@ -169,10 +170,8 @@ func run(options Options) error {
 		return err
 	}
 
-	const MAX_FILE_COUNT = 100
-
-	if len(fileList) > MAX_FILE_COUNT {
-		slog.Error("error: Number of files is greater than limit", "limit", MAX_FILE_COUNT, "fileCount", len(fileList))
+	if len(fileList) > options.MaxFileCount {
+		slog.Error("error: Number of files is greater than limit", "limit", options.MaxFileCount, "fileCount", len(fileList))
 		return err
 	}
 
