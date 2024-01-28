@@ -21,11 +21,12 @@ type FileEntry struct {
 }
 
 type Options struct {
-	LogFormat      string   `long:"log-format" default:"text" description:"Log format (text or json)"`
-	LogLevel       string   `long:"log-level" default:"info" description:"Log level (debug, info, warn, error)"`
-	ForceOverwrite bool     `long:"force" short:"f" description:"Force overwrite pre-existing make_txtar.sh"`
-	ExcludeDirs    []string `long:"ignore-dirs" short:"i" description:"Ignore directories"`
-	MaxFileCount   int      `long:"maxfiles" default:"100" description:"Maximum number of files to include in txtar archive"`
+	LogFormat           string   `long:"log-format" default:"text" description:"Log format (text or json)"`
+	LogLevel            string   `long:"log-level" default:"info" description:"Log level (debug, info, warn, error)"`
+	ForceOverwrite      bool     `long:"force" short:"f" description:"Force overwrite pre-existing make_txtar.sh"`
+	ExcludeDirs         []string `long:"ignore-dirs" short:"i" description:"Ignore directories"`
+	MaxFileCount        int      `long:"maxfiles" default:"100" description:"Maximum number of files to include in txtar archive"`
+	ExcludeInstructions bool     `long:"exclude-instructions" short:"e" description:"Exclude instructions from txtar archive"`
 }
 
 func Execute() int {
@@ -91,6 +92,7 @@ rg --files $tmp/{{.Cwd}}
 mkdir -p $tmp/gpt_instructions_XXYYBB
 
 cat >$tmp/gpt_instructions_XXYYBB/1.txt <<EOF
+{{ if not .ExcludeInstructions }}
 Subject: Code Submission Guidelines in Txtar Archive Format
 
 As we collaborate on code submissions, I would like to emphasize some
@@ -133,6 +135,7 @@ Your adherence to these guidelines will greatly facilitate our
 collaboration and ensure a streamlined code submission process.
 
 Thank you for your attention to detail and cooperation.
+{{ end }}
 EOF
 
 {
@@ -210,11 +213,13 @@ func run(options Options) error {
 	cwdName := filepath.Base(cwd)
 
 	data := struct {
-		Files []FileEntry
-		Cwd   string
+		Files               []FileEntry
+		Cwd                 string
+		ExcludeInstructions bool
 	}{
-		Files: fileEntries,
-		Cwd:   cwdName,
+		Files:               fileEntries,
+		Cwd:                 cwdName,
+		ExcludeInstructions: options.ExcludeInstructions,
 	}
 
 	var scriptBuilder strings.Builder
