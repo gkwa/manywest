@@ -26,7 +26,7 @@ type Options struct {
 	ForceOverwrite      bool     `long:"force" short:"f" description:"Force overwrite pre-existing make_txtar.sh"`
 	ExcludeDirs         []string `long:"ignore-dirs" short:"i" description:"Ignore directories"`
 	MaxFileCount        int      `long:"maxfiles" default:"100" description:"Maximum number of files to include in txtar archive"`
-	ExcludeInstructions bool     `long:"exclude-instructions" short:"e" description:"Exclude instructions from txtar archive"`
+	IncludeInstructions bool     `long:"include-instructions" short:"s" description:"Include instructions into txtar archive"`
 }
 
 func Execute() int {
@@ -92,7 +92,7 @@ rg --files $tmp/{{.Cwd}}
 mkdir -p $tmp/gpt_instructions_XXYYBB
 
 cat >$tmp/gpt_instructions_XXYYBB/1.txt <<EOF
-{{ if not .ExcludeInstructions }}
+{{ if .IncludeInstructions }}
 Subject: Code Submission Guidelines in Txtar Archive Format
 
 As we collaborate on code submissions, I would like to emphasize some
@@ -154,8 +154,8 @@ func run(options Options) error {
 		"node_modules":            true,
 		"gpt_instructions_XXYYBB": true,
 		".ruff_cache":             true,
+		".venv":                   true,
 	}
-	// append user-specified exclude dirs
 	for _, dir := range options.ExcludeDirs {
 		excludeDirs[dir] = true
 	}
@@ -215,11 +215,11 @@ func run(options Options) error {
 	data := struct {
 		Files               []FileEntry
 		Cwd                 string
-		ExcludeInstructions bool
+		IncludeInstructions bool
 	}{
 		Files:               fileEntries,
 		Cwd:                 cwdName,
-		ExcludeInstructions: options.ExcludeInstructions,
+		IncludeInstructions: options.IncludeInstructions,
 	}
 
 	var scriptBuilder strings.Builder
