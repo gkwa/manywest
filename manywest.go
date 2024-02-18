@@ -155,6 +155,7 @@ func run(options Options) error {
 		"gpt_instructions_XXYYBB": true,
 		".ruff_cache":             true,
 		".venv":                   true,
+		"target/debug":            true,
 	}
 	for _, dir := range options.ExcludeDirs {
 		excludeDirs[dir] = true
@@ -246,10 +247,13 @@ func recurseDirectory(root string, excludeDirs map[string]bool) ([]string, error
 		if err != nil {
 			return err
 		}
-		if info.IsDir() && excludeDirs[info.Name()] {
-			return filepath.SkipDir
-		}
 		if info.IsDir() {
+			// Check if any partial path matches the current directory
+			for excl := range excludeDirs {
+				if strings.Contains(strings.ToLower(path), strings.ToLower(excl)) {
+					return filepath.SkipDir
+				}
+			}
 			return nil
 		}
 		if isExcludedFile(path) {
