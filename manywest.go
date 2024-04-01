@@ -155,6 +155,7 @@ func run(options Options) error {
 		"gpt_instructions_XXYYBB": true,
 		".ruff_cache":             true,
 		".venv":                   true,
+		".terraform":              true,
 		"target/debug":            true,
 	}
 	for _, dir := range options.ExcludeDirs {
