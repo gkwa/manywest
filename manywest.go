@@ -29,25 +29,6 @@ type Options struct {
 	IncludeInstructions bool     `long:"include-instructions" short:"s" description:"Include instructions into txtar archive"`
 }
 
-func Execute() int {
-	options := parseArgs()
-
-	logger, err := getLogger(options.LogLevel, options.LogFormat)
-	if err != nil {
-		slog.Error("getLogger", "error", err)
-		return 1
-	}
-
-	slog.SetDefault(logger)
-
-	err = run(options)
-	if err != nil {
-		slog.Error("run failed", "error", err)
-		return 1
-	}
-	return 0
-}
-
 func parseArgs() Options {
 	var options Options
 
@@ -87,7 +68,7 @@ done | tee $tmp/filelist.txt
 tar -cf $tmp/{{.Cwd}}.tar -T $tmp/filelist.txt
 mkdir -p $tmp/{{.Cwd}}
 tar xf $tmp/{{.Cwd}}.tar -C $tmp/{{.Cwd}}
-rg --files $tmp/{{.Cwd}}
+rg --hidden --files $tmp/{{.Cwd}}
 
 mkdir -p $tmp/gpt_instructions_XXYYBB
 
@@ -141,7 +122,7 @@ EOF
 {
     cat $tmp/gpt_instructions_XXYYBB/1.txt
     echo txtar archive is below
-    txtar-c $tmp/{{.Cwd}}
+    txtar-c -quote -a $tmp/{{.Cwd}}
 } | pbcopy
 
 rm -rf $tmp
@@ -332,4 +313,23 @@ func isFileText(filename string) (bool, error) {
 
 	kind, _ := filetype.Match(buffer)
 	return kind == filetype.Unknown || kind.MIME.Type == "text", nil
+}
+
+func Execute() int {
+	options := parseArgs()
+
+	logger, err := getLogger(options.LogLevel, options.LogFormat)
+	if err != nil {
+		slog.Error("getLogger", "error", err)
+		return 1
+	}
+
+	slog.SetDefault(logger)
+
+	err = run(options)
+	if err != nil {
+		slog.Error("run failed", "error", err)
+		return 1
+	}
+	return 0
 }
