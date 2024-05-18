@@ -45,6 +45,11 @@ func parseArgs() Options {
 const templateScript = `#!/usr/bin/env bash
 set -e
 
+declare -a files=(
+	{{range .Files}}# {{.Path}} # loc: {{.Count}}
+	{{end}}
+)
+
 tmp=$(mktemp -d {{.Cwd}}.XXXXX)
 
 if [ -z "${tmp+x}" ] || [ -z "$tmp" ]; then
@@ -57,10 +62,6 @@ if ! command -v txtar-c >/dev/null; then
 	exit 1
 fi
 
-declare -a files=(
-	{{range .Files}}# {{.Path}} # loc: {{.Count}}
-	{{end}}
-)
 for file in "${files[@]}"; do
     echo $file
 done | tee $tmp/filelist.txt
