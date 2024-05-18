@@ -130,13 +130,14 @@ rm -rf $tmp
 
 func run(options Options) error {
 	excludeDirs := map[string]bool{
-		".git":                    true,
 		"__pycache__":             true,
-		"node_modules":            true,
-		"gpt_instructions_XXYYBB": true,
+		".git":                    true,
 		".ruff_cache":             true,
-		".venv":                   true,
 		".terraform":              true,
+		".timestamps":             true,
+		".venv":                   true,
+		"gpt_instructions_XXYYBB": true,
+		"node_modules":            true,
 		"target/debug":            true,
 	}
 	for _, dir := range options.ExcludeDirs {
