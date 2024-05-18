@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/taylormonacelli/manywest"
+	"github.com/gkwa/manywest"
 )
 
 func main() {

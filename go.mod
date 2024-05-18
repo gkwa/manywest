@@ -1,6 +1,6 @@
-module github.com/taylormonacelli/manywest
+module github.com/gkwa/manywest
 
-go 1.21.5
+go 1.22.0
 
 require (
 	github.com/h2non/filetype v1.1.3
