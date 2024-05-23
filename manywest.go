@@ -28,6 +28,7 @@ func run(options Options) error {
 	excludeDirs := map[string]bool{
 		"__pycache__":             true,
 		".git":                    true,
+		".tox":                    true,
 		".ruff_cache":             true,
 		".terraform":              true,
 		".timestamps":             true,
