@@ -77,8 +77,8 @@ vet: .timestamps/.vet.time
 	@touch $@
 
 .PHONY: install # go install
-install: $(BIN)
-	go install
+install:
+	go install -ldflags "$(LDFLAGS)"
 
 .PHONY: help # show makefile rules
 help:
