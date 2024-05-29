@@ -18,7 +18,7 @@ declare -a files=(
 	{{end}}
 )
 for file in "${files[@]}"; do
-    echo $file
+    echo "$file"
 done | tee $tmp/filelist.txt
 
 tar -cf $tmp/{{.Cwd}}.tar -T $tmp/filelist.txt
