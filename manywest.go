@@ -30,6 +30,7 @@ func run(options Options) error {
 		".git":                    true,
 		".tox":                    true,
 		".ruff_cache":             true,
+		".pytest_cache":           true,
 		".terraform":              true,
 		".timestamps":             true,
 		".venv":                   true,
