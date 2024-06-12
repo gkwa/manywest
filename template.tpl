@@ -24,7 +24,7 @@ done | tee $tmp/filelist.txt
 tar -cf $tmp/{{.Cwd}}.tar -T $tmp/filelist.txt
 mkdir -p $tmp/{{.Cwd}}
 tar xf $tmp/{{.Cwd}}.tar -C $tmp/{{.Cwd}}
-rg --hidden --files $tmp/{{.Cwd}}
+rg --no-ignore --hidden --files $tmp/{{.Cwd}}
 
 mkdir -p $tmp/gpt_instructions_XXYYBB
 
