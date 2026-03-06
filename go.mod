@@ -2,7 +2,7 @@ module github.com/gkwa/manywest
 
 go 1.24.0
 
-toolchain go1.26.0
+toolchain go1.26.1
 
 require (
 	github.com/go-git/go-git/v5 v5.17.0
