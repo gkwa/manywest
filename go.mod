@@ -8,7 +8,7 @@ require (
 	github.com/go-git/go-git/v5 v5.18.0
 	github.com/h2non/filetype v1.1.3
 	github.com/jessevdk/go-flags v1.6.1
-	github.com/magefile/mage v1.17.1
+	github.com/magefile/mage v1.17.2
 	github.com/taylormonacelli/littlecow v0.0.5
 )
 
